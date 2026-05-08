@@ -58,7 +58,7 @@ function getWeekendDays(pickupDate, dropoffDate) {
 
 function validateLicense(licenseHeldYears) {
   if (licenseHeldYears < MIN_LICENSE_YEARS) {
-    return "License held for less than 1 year are ineligible to rent";
+    return "Driver license held for less than a year - cannot rent";
   }
   return null;
 }
@@ -91,21 +91,14 @@ function calculateBasePrice(age, days, weekendDays) {
   return rentalprice;
 }
 
-function applyLicenseSurcharge(basePrice, licenseHeldYears, season, days) {
-  let rentalprice = basePrice;
-
-  if (licenseHeldYears < LICENSE_YEARS_15_EUR && season === "High") {
-    rentalprice += DAILY_HIGH_SEASON_SURCHARGE * days;
-  }
-
+function applyLicenseSurcharge(basePrice, licenseHeldYears) {
   if (licenseHeldYears < LICENSE_YEARS_30_PERCENT) {
-    rentalprice *= LICENSE_SURCHARGE_MULTIPLIER;
+    return basePrice * LICENSE_SURCHARGE_MULTIPLIER;
   }
-
-  return rentalprice;
+  return basePrice;
 }
 
-function applySeasonalAndTypeMultipliers(basePrice, type, age, season, days) {
+function applySeasonalAndTypeMultipliers(basePrice, type, age, season, days, licenseHeldYears) {
   let rentalprice = basePrice;
 
   if (type === "Racer" && age <= RACER_AGE_LIMIT && season === "High") {
@@ -114,6 +107,10 @@ function applySeasonalAndTypeMultipliers(basePrice, type, age, season, days) {
 
   if (season === "High") {
     rentalprice *= HIGH_SEASON_MULTIPLIER;
+  }
+
+  if (licenseHeldYears < LICENSE_YEARS_15_EUR && season === "High") {
+    rentalprice += DAILY_HIGH_SEASON_SURCHARGE * days;
   }
 
   if (days > LONG_RENTAL_DAYS && season === "Low") {
@@ -144,8 +141,15 @@ function price(pickup, dropoff, pickupDate, dropoffDate, type, age, licenseHeldY
   }
 
   let rentalprice = calculateBasePrice(age, days, weekendDays);
-  rentalprice = applyLicenseSurcharge(rentalprice, licenseHeldYears, season, days);
-  rentalprice = applySeasonalAndTypeMultipliers(rentalprice, type, age, season, days);
+  rentalprice = applyLicenseSurcharge(rentalprice, licenseHeldYears);
+  rentalprice = applySeasonalAndTypeMultipliers(
+    rentalprice,
+    type,
+    age,
+    season,
+    days,
+    licenseHeldYears
+  );
 
   return `$${rentalprice.toFixed(2)}`;
 }

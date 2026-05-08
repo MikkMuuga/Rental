@@ -32,7 +32,7 @@ describe("getWeekendDays", () => {
 describe("license eligibility", () => {
   test("returns ineligible message if license held less than 1 year", () => {
     expect(price("A", "B", "2024-06-10", "2024-06-12", "Compact", 25, 0)).toBe(
-      "License held for less than 1 year are ineligible to rent"
+      "Driver license held for less than a year - cannot rent"
     );
   });
 });
