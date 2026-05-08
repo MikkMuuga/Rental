@@ -1,5 +1,10 @@
-const { price, getWeekendDays } = require("./rentalPrice");
+const { price, getWeekendDays, getSeason } = require("./rentalPrice");
 
+describe("getSeason", () => {
+  test("returns High when rental spans entire high season", () => {
+    expect(getSeason("2024-01-01", "2024-11-30")).toBe("High");
+  });
+});
 describe("getWeekendDays helper", () => {
   test("returns 0 for Mon–Fri", () => {
     expect(getWeekendDays("2026-02-23", "2026-02-27")).toBe(0);
